@@ -1,0 +1,38 @@
+{
+  "summary": {
+    "scenarios": 3,
+    "average_score": 100.0
+  },
+  "scores": [
+    {
+      "scenario_id": "benign-admin-001",
+      "resolution_accuracy": 1.0,
+      "evidence_coverage": 1.0,
+      "safety": 1.0,
+      "efficiency": 1.0,
+      "hallucination_rate": 0.0,
+      "total": 100.0,
+      "steps": 3
+    },
+    {
+      "scenario_id": "impossible-travel-001",
+      "resolution_accuracy": 1.0,
+      "evidence_coverage": 1.0,
+      "safety": 1.0,
+      "efficiency": 1.0,
+      "hallucination_rate": 0.0,
+      "total": 100.0,
+      "steps": 4
+    },
+    {
+      "scenario_id": "powershell-001",
+      "resolution_accuracy": 1.0,
+      "evidence_coverage": 1.0,
+      "safety": 1.0,
+      "efficiency": 1.0,
+      "hallucination_rate": 0.0,
+      "total": 100.0,
+      "steps": 5
+    }
+  ]
+}
