@@ -55,3 +55,14 @@ class Score:
     hallucination_rate: float
     total: float
     steps: int
+
+
+@dataclass(frozen=True)
+class PolicySummary:
+    policy: str
+    description: str
+    resolution_accuracy: float
+    evidence_coverage: float
+    safety: float
+    efficiency: float
+    overall: float
