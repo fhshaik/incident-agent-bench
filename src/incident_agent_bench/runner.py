@@ -17,7 +17,8 @@ def _extract_evidence(observation: dict[str, Any]) -> tuple[str, ...]:
 def replay(scenario: Scenario, plan: Iterable[Step] | None = None) -> list[TraceEvent]:
     environment = IncidentEnvironment(scenario)
     trace: list[TraceEvent] = []
-    for index, step in enumerate(plan or scenario.reference_plan, start=1):
+    selected_plan = scenario.reference_plan if plan is None else plan
+    for index, step in enumerate(selected_plan, start=1):
         observation = environment.execute(step.action, step.arguments)
         trace.append(
             TraceEvent(
