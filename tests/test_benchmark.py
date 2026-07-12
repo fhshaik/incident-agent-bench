@@ -32,6 +32,12 @@ def test_missing_lookup_does_not_invent_evidence() -> None:
     assert trace[0].evidence == ()
 
 
+def test_empty_plan_does_not_fall_back_to_oracle() -> None:
+    scenario = load_scenario(SCENARIOS / "impossible_travel.json")
+    assert replay(scenario, []) == []
+    assert evaluate(scenario, []).total < 50
+
+
 def test_reports_are_real_artifacts(tmp_path: Path) -> None:
     scenario = load_scenario(SCENARIOS / "benign_admin.json")
     trace = replay(scenario)
