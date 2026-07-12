@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from incident_agent_bench.evaluation import evaluate
+from incident_agent_bench.evaluation import evaluate, summarize_policy
 from incident_agent_bench.models import Action, Step
-from incident_agent_bench.reporting import write_html, write_json
+from incident_agent_bench.policies import POLICIES
+from incident_agent_bench.reporting import write_comparison, write_html, write_json
 from incident_agent_bench.runner import replay
 from incident_agent_bench.scenario import load_scenario, load_suite
 
@@ -40,3 +41,36 @@ def test_reports_are_real_artifacts(tmp_path: Path) -> None:
     write_html([score], html_path, {scenario.scenario_id: trace})
     assert '"average_score": 100.0' in json_path.read_text()
     assert "benign-admin-001 replay" in html_path.read_text()
+
+
+def test_policy_comparison_has_imperfect_controls(tmp_path: Path) -> None:
+    scenarios = load_suite(SCENARIOS)
+    summaries = []
+    for name, (description, policy) in POLICIES.items():
+        scores = [evaluate(scenario, replay(scenario, policy(scenario))) for scenario in scenarios]
+        summaries.append(summarize_policy(name, description, scores))
+    by_name = {summary.policy: summary for summary in summaries}
+    assert by_name["random"].overall < by_name["heuristic"].overall
+    assert by_name["naive"].evidence_coverage == 0.0
+    assert by_name["heuristic"].overall < by_name["oracle"].overall
+    json_path, html_path = tmp_path / "comparison.json", tmp_path / "comparison.html"
+    write_comparison(summaries, json_path, html_path)
+    assert '"policy": "heuristic"' in json_path.read_text()
+    assert "Answer-key fixture" in html_path.read_text()
+
+
+def test_unknown_alert_falls_back_to_review() -> None:
+    scenario = load_scenario(SCENARIOS / "benign_admin.json")
+    altered = type(scenario)(
+        scenario.scenario_id,
+        scenario.title,
+        {"type": "unknown"},
+        scenario.state,
+        scenario.expected_evidence,
+        "needs_review",
+        scenario.dangerous_actions,
+        scenario.reference_plan,
+    )
+    _, heuristic = POLICIES["heuristic"]
+    trace = replay(altered, heuristic(altered))
+    assert trace[-1].observation["resolution"] == "needs_review"

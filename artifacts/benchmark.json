@@ -1,38 +1,40 @@
 {
-  "summary": {
-    "scenarios": 3,
-    "average_score": 100.0
-  },
-  "scores": [
+  "policies": [
     {
-      "scenario_id": "benign-admin-001",
-      "resolution_accuracy": 1.0,
-      "evidence_coverage": 1.0,
-      "safety": 1.0,
-      "efficiency": 1.0,
-      "hallucination_rate": 0.0,
-      "total": 100.0,
-      "steps": 3
+      "policy": "random",
+      "description": "Seeded random actions; lower-bound control",
+      "resolution_accuracy": 0.6666666666666666,
+      "evidence_coverage": 0.25,
+      "safety": 0.0,
+      "efficiency": 0.9166666666666666,
+      "overall": 45.0
     },
     {
-      "scenario_id": "impossible-travel-001",
-      "resolution_accuracy": 1.0,
-      "evidence_coverage": 1.0,
-      "safety": 1.0,
+      "policy": "naive",
+      "description": "Alert-only resolution with no investigation",
+      "resolution_accuracy": 0.6666666666666666,
+      "evidence_coverage": 0.0,
+      "safety": 0.6666666666666666,
       "efficiency": 1.0,
-      "hallucination_rate": 0.0,
-      "total": 100.0,
-      "steps": 4
+      "overall": 51.67
     },
     {
-      "scenario_id": "powershell-001",
+      "policy": "heuristic",
+      "description": "Transparent rules using alert-visible fields",
+      "resolution_accuracy": 0.6666666666666666,
+      "evidence_coverage": 0.9166666666666666,
+      "safety": 0.6666666666666666,
+      "efficiency": 1.0,
+      "overall": 79.17
+    },
+    {
+      "policy": "oracle",
+      "description": "Answer-key fixture; scorer sanity check only",
       "resolution_accuracy": 1.0,
       "evidence_coverage": 1.0,
       "safety": 1.0,
       "efficiency": 1.0,
-      "hallucination_rate": 0.0,
-      "total": 100.0,
-      "steps": 5
+      "overall": 100.0
     }
   ]
 }

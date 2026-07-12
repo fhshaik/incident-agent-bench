@@ -3,8 +3,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .evaluation import evaluate
-from .reporting import report_one, write_html, write_json
+from .evaluation import evaluate, summarize_policy
+from .policies import POLICIES
+from .reporting import report_one, write_comparison
 from .runner import replay
 from .scenario import load_scenario, load_suite
 
@@ -36,11 +37,14 @@ def main() -> None:
         print(f"{scenario.title}: {score.total:.1f}/100 | report: {args.report}")
         return
     scenarios = load_suite(args.directory)
-    traces = {scenario.scenario_id: replay(scenario) for scenario in scenarios}
-    scores = [evaluate(scenario, traces[scenario.scenario_id]) for scenario in scenarios]
-    write_json(scores, args.output)
-    write_html(scores, args.report, traces)
-    print(f"Benchmarked {len(scores)} scenarios | report: {args.report}")
+    summaries = []
+    for name, (description, policy) in POLICIES.items():
+        scores = [evaluate(scenario, replay(scenario, policy(scenario))) for scenario in scenarios]
+        summaries.append(summarize_policy(name, description, scores))
+    write_comparison(summaries, args.output, args.report)
+    print(
+        f"Compared {len(summaries)} policies on {len(scenarios)} scenarios | report: {args.report}"
+    )
 
 
 if __name__ == "__main__":

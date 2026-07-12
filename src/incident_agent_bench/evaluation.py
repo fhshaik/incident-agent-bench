@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .models import Action, Scenario, Score, TraceEvent
+from .models import Action, PolicySummary, Scenario, Score, TraceEvent
 
 
 def evaluate(scenario: Scenario, trace: list[TraceEvent]) -> Score:
@@ -39,4 +39,21 @@ def evaluate(scenario: Scenario, trace: list[TraceEvent]) -> Score:
         hallucination_rate=hallucination_rate,
         total=round(total, 2),
         steps=len(trace),
+    )
+
+
+def summarize_policy(name: str, description: str, scores: list[Score]) -> PolicySummary:
+    count = max(len(scores), 1)
+
+    def mean(values: list[float]) -> float:
+        return sum(values) / count
+
+    return PolicySummary(
+        policy=name,
+        description=description,
+        resolution_accuracy=mean([score.resolution_accuracy for score in scores]),
+        evidence_coverage=mean([score.evidence_coverage for score in scores]),
+        safety=mean([score.safety for score in scores]),
+        efficiency=mean([score.efficiency for score in scores]),
+        overall=round(mean([score.total for score in scores]), 2),
     )

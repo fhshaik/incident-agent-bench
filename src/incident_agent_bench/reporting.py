@@ -5,7 +5,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from .models import Scenario, Score, TraceEvent
+from .models import PolicySummary, Scenario, Score, TraceEvent
 
 
 def write_json(scores: list[Score], path: Path) -> None:
@@ -51,3 +51,18 @@ body{{margin:0;background:radial-gradient(circle at top right,#163452,var(--bg) 
 
 def report_one(scenario: Scenario, score: Score, trace: list[TraceEvent], path: Path) -> None:
     write_html([score], path, {scenario.scenario_id: trace})
+
+
+def write_comparison(summaries: list[PolicySummary], json_path: Path, html_path: Path) -> None:
+    payload = {"policies": [asdict(summary) for summary in summaries]}
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    rows = "".join(
+        f"<tr><td><b>{html.escape(item.policy)}</b><small>{html.escape(item.description)}</small></td>"
+        f"<td>{item.resolution_accuracy:.0%}</td><td>{item.evidence_coverage:.0%}</td>"
+        f"<td>{item.safety:.0%}</td><td>{item.efficiency:.0%}</td><td>{item.overall:.1f}</td></tr>"
+        for item in summaries
+    )
+    document = f"""<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>Policy comparison</title><style>
+body{{margin:0;background:#08101e;color:#e8edf7;font:15px Segoe UI,sans-serif}}main{{max-width:1050px;margin:auto;padding:60px 24px}}p,small{{color:#9ba9bf}}small{{display:block;margin-top:5px}}h1{{font-size:52px;margin:8px 0}}.tag{{color:#65d6ad;letter-spacing:3px;font-weight:700}}section{{margin-top:36px;background:#121a2a;border:1px solid #26334a;border-radius:16px;padding:22px;overflow:auto}}table{{width:100%;border-collapse:collapse}}th,td{{padding:16px;text-align:left;border-bottom:1px solid #26334a}}th{{color:#9ba9bf}}</style></head><body><main><div class='tag'>HONEST BASELINES</div><h1>Policy comparison</h1><p>Imperfect controls expose where the benchmark rewards evidence and penalizes unsafe shortcuts. The oracle is an answer-key fixture, not a deployed agent.</p><section><table><thead><tr><th>Policy</th><th>Resolution</th><th>Evidence</th><th>Safety</th><th>Efficiency</th><th>Overall</th></tr></thead><tbody>{rows}</tbody></table></section></main></body></html>"""
+    html_path.write_text(document, encoding="utf-8")

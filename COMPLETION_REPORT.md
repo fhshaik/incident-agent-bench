@@ -5,7 +5,7 @@
 - Closed-world incident environment with nine typed actions
 - Immutable trace replay and evidence extraction
 - Safety, grounding, resolution, efficiency, and hallucination metrics
-- Three deterministic security scenarios and reference policies
+- Three deterministic security scenarios and four comparison policies
 - JSON benchmark output and standalone HTML scorecard/timeline
 - Command-line replay and benchmark workflows
 
@@ -21,7 +21,7 @@ Scenarios, execution, replay, evaluation, and presentation are separate modules.
 - Coverage: 89.35% (threshold: 85%)
 - `git diff --check`: passed
 - Demo replay: 100.0/100
-- Full benchmark: 3 scenarios, 100.0 average reference score
+- Full benchmark: random 45.0, naive 51.67, heuristic 79.17, oracle fixture 100.0
 
 ## Generated artifacts
 
@@ -36,4 +36,3 @@ The scenario suite is synthetic and small. Reference policies are deterministic 
 ## Optional extensions
 
 Add independently authored scenario packs, latency/cost adapters, and model-backed policies while retaining the existing grounded trace boundary.
-
